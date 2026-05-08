@@ -1,100 +1,53 @@
 # Archie — Ottawa Blockchain Accountability Bot
 
-Discord accountability bot for the Ottawa Blockchain private team channel. Archie tracks action items, sends smart reminders based on due dates, and routes questions to the right team member.
+OpenClaw-based Discord accountability bot for the Ottawa Blockchain private team channel. Tracks action items, sends smart reminders based on due dates, learns from conversations, and routes questions to the right team member.
 
-## Setup
+**Read `PLAN.md` first** — it has the full setup walkthrough for a fresh VPS.
 
-### 1. Discord Bot
-
-1. Go to discord.com/developers/applications → New Application → "Archie"
-2. Bot tab → Add Bot → copy the token
-3. OAuth2 → URL Generator → select `bot` + `applications.commands`
-4. Bot permissions: `Send Messages`, `Read Message History`, `Mention Everyone`, `Use Slash Commands`
-5. Invite bot to your server using the generated URL
-
-### 2. Environment
+## Quick Start (on the dedicated VPS)
 
 ```bash
-cp .env.example .env
-# Fill in all values in .env
+# 1. Install OpenClaw
+npm install -g openclaw@latest
+
+# 2. Clone this repo
+git clone https://github.com/nolandruid/ottawabc-bot.git
+cd ottawabc-bot
+
+# 3. Run the onboard wizard
+openclaw onboard --install-daemon
+
+# 4. Symlink workspace
+mv ~/.openclaw/workspace ~/.openclaw/workspace.bak
+ln -s ~/ottawabc-bot/workspace ~/.openclaw/workspace
+openclaw gateway restart
+
+# 5. Verify
+openclaw gateway status
 ```
 
-Required values:
-- `DISCORD_BOT_TOKEN` — from Discord developer portal
-- `DISCORD_GUILD_ID` — right-click your server → Copy Server ID
-- `DISCORD_CHANNEL_ID` — right-click the accountability channel → Copy Channel ID
-- `ANTHROPIC_API_KEY` — from console.anthropic.com
-- `BOT_OWNER_DISCORD_ID` — your Discord user ID (right-click yourself → Copy User ID)
+## Workspace Files
 
-### 3. Team Roster
+| File | Purpose |
+|------|---------|
+| `workspace/SOUL.md` | Archie's identity, tone, routing rules |
+| `workspace/MEMORY.md` | Auto-updated by Archie as he learns |
+| `workspace/HEARTBEAT.md` | Proactive reminder logic |
+| `workspace/TEAM.md` | Team roster + Discord IDs |
 
-Edit `team.json` with your real team members and their Discord user IDs.
+## Action Items
 
-### 4. Action Items
+Edit `tasks.json` directly until Notion is connected. See `PLAN.md` for Notion setup steps.
 
-Edit `tasks.json` to add action items until Notion is connected. Format:
-```json
-{
-  "id": "unique-id",
-  "name": "Task description",
-  "assigned_to": "Name (must match team.json)",
-  "due_date": "YYYY-MM-DD",
-  "status": "pending",
-  "notes": ""
-}
-```
+## Team Roster
 
-Status values: `pending`, `in-progress`, `done`, `blocked`
+Edit `workspace/TEAM.md` with real team member names and Discord user IDs (`<@ID>`).
 
-### 5. Run Locally
+## Architecture
 
-```bash
-python3 -m venv venv
-venv/bin/pip install -r requirements.txt
-venv/bin/python bot.py
-```
-
-### 6. Deploy on VPS
-
-```bash
-# Copy files to VPS
-scp -r . nolan@your-vps:/home/nolan/ottawabc-bot
-
-# On the VPS
-cd /home/nolan/ottawabc-bot
-python3 -m venv venv
-venv/bin/pip install -r requirements.txt
-cp .env.example .env && nano .env   # fill in values
-
-sudo cp ottawabc-bot.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable ottawabc-bot
-sudo systemctl start ottawabc-bot
-
-# Check logs
-journalctl -u ottawabc-bot -f
-```
-
-## Slash Commands
-
-| Command | Description |
-|---------|-------------|
-| `/status` | Show all pending action items |
-| `/status @user` | Show tasks for a specific person |
-| `/done [task_id]` | Mark a task as done |
-| `/remind` | Trigger the full digest now (owner only) |
-
-## Reminder Schedule
-
-| When | What |
-|------|------|
-| Monday 9 AM ET | Full weekly digest — all tasks, all people |
-| Tue–Sun 9 AM ET | Smart daily check — due today/tomorrow get @mentioned; due in 2 days only get nudged if they haven't posted an update |
-
-## Connecting Notion (later)
-
-When ready, see the commented code in `notion_sync.py`. You'll need:
-1. A Notion workspace for Ottawa Blockchain
-2. An integration token (notion.so/my-integrations)
-3. The Action Items database shared with the integration
-4. `NOTION_TOKEN` and `NOTION_DATABASE_ID` added to `.env`
+- **Runtime:** OpenClaw on dedicated DigitalOcean VPS
+- **Channel:** Discord (Ottawa Blockchain private accountability channel)
+- **Model:** claude-sonnet-4-6
+- **Tasks:** tasks.json → Notion (later)
+- **Memory:** workspace/MEMORY.md (auto-updated)
+- **Proactivity:** OpenClaw heartbeat system + HEARTBEAT.md
