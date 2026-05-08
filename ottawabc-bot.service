@@ -1,0 +1,16 @@
+[Unit]
+Description=Ottawa Blockchain Accountability Bot (Archie)
+After=network.target
+
+[Service]
+User=nolan
+WorkingDirectory=/home/nolan/ottawabc-bot
+EnvironmentFile=/home/nolan/ottawabc-bot/.env
+ExecStart=/home/nolan/ottawabc-bot/venv/bin/python bot.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

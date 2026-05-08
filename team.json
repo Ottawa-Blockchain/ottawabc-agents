@@ -1,0 +1,25 @@
+{
+  "members": [
+    {
+      "name": "Nolan",
+      "discord_id": "DISCORD_USER_ID_HERE",
+      "notion_name": "Nolan",
+      "role": "Lead / Events / Partnerships",
+      "owns": ["events", "sponsorships", "community", "partnerships"]
+    },
+    {
+      "name": "TeamMember2",
+      "discord_id": "DISCORD_USER_ID_HERE",
+      "notion_name": "TeamMember2",
+      "role": "Marketing / Social",
+      "owns": ["marketing", "social media", "newsletter"]
+    },
+    {
+      "name": "TeamMember3",
+      "discord_id": "DISCORD_USER_ID_HERE",
+      "notion_name": "TeamMember3",
+      "role": "Tech / Dev",
+      "owns": ["website", "technical", "development"]
+    }
+  ]
+}
