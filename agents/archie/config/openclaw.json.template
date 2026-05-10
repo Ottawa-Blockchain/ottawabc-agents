@@ -22,7 +22,8 @@
   },
   "channels": {
     "discord": {
-      "enabled": true
+      "enabled": true,
+      "token": "${DISCORD_BOT_TOKEN}"
     },
     "telegram": {
       "enabled": true
@@ -31,6 +32,9 @@
   "plugins": {
     "entries": {
       "openai": {
+        "enabled": true
+      },
+      "discord": {
         "enabled": true
       }
     }
@@ -42,6 +46,11 @@
         "mode": "api_key"
       }
     }
+  },
+  "commands": {
+    "ownerAllowFrom": [
+      "telegram:${TELEGRAM_OWNER_CHAT_ID}"
+    ]
   },
   "mcp": {
     "servers": {

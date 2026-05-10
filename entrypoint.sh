@@ -14,17 +14,4 @@ else
   envsubst < /app/openclaw.json.template > /app/openclaw.json
 fi
 
-# Start gateway in background so we can run channel setup
-openclaw gateway run &
-GATEWAY_PID=$!
-
-# Wait for gateway to be ready
-sleep 20
-
-# Auto-pair Discord on every startup so rebuilds don't break the connection
-if [ -n "${DISCORD_BOT_TOKEN:-}" ]; then
-  openclaw channels add --channel discord --token "$DISCORD_BOT_TOKEN" 2>&1 || true
-fi
-
-# Wait for gateway process
-wait $GATEWAY_PID
+exec openclaw gateway run
