@@ -23,6 +23,9 @@
   "channels": {
     "discord": {
       "enabled": true
+    },
+    "telegram": {
+      "enabled": true
     }
   },
   "plugins": {
