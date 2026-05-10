@@ -22,7 +22,8 @@
   },
   "channels": {
     "discord": {
-      "enabled": true
+      "enabled": true,
+      "observe_channel_ids": ["1456542559429197835"]
     },
     "telegram": {
       "enabled": true
