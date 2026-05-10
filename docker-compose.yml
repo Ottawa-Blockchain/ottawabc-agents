@@ -1,0 +1,8 @@
+services:
+  archie:
+    build: .
+    container_name: archie
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./workspace:/app/workspace
