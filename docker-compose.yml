@@ -9,3 +9,14 @@ services:
     env_file: agents/archie/.env
     volumes:
       - ./agents/archie/workspace:/app/workspace
+
+  pulse:
+    build:
+      context: .
+      args:
+        AGENT: pulse
+    container_name: pulse
+    restart: unless-stopped
+    env_file: agents/pulse/.env
+    volumes:
+      - ./agents/pulse/workspace:/app/workspace
