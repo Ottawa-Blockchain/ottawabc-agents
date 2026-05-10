@@ -3,9 +3,9 @@
     "defaults": {
       "workspace": "/app/workspace",
       "model": {
-        "primary": "anthropic/claude-sonnet-4-6",
+        "primary": "openai/gpt-4.5",
         "fallbacks": [
-          "anthropic/claude-haiku-4-5"
+          "openai/gpt-4o"
         ]
       },
       "typingMode": "thinking"
@@ -27,15 +27,15 @@
   },
   "plugins": {
     "entries": {
-      "anthropic": {
+      "openai": {
         "enabled": true
       }
     }
   },
   "auth": {
     "profiles": {
-      "anthropic:default": {
-        "provider": "anthropic",
+      "openai:default": {
+        "provider": "openai",
         "mode": "api_key"
       }
     }

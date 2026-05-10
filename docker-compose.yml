@@ -1,8 +1,11 @@
 services:
   archie:
-    build: .
+    build:
+      context: .
+      args:
+        AGENT: archie
     container_name: archie
     restart: unless-stopped
-    env_file: .env
+    env_file: agents/archie/.env
     volumes:
-      - ./workspace:/app/workspace
+      - ./agents/archie/workspace:/app/workspace
