@@ -1,0 +1,19 @@
+# Secrets — never send to Docker build context
+.env
+*.env
+
+# Runtime data — written by the agent at runtime, not part of the image
+workspace/memory/
+workspace/tasks.json
+workspace/.openclaw/
+workspace/.clawhub/
+workspace/dynamic-crons.json
+
+# Device pairing tokens — bind-mounted from host, never baked into image
+persist/
+
+# Noise
+*.log
+*.pyc
+__pycache__/
+.DS_Store

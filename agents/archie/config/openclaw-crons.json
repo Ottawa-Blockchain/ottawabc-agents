@@ -1,0 +1,25 @@
+{
+  "_note": "Archie's cron jobs. Seeded fresh on every container start by seed-crons.py. `deliver_to` fields support {ENV_VAR} substitution resolved at runtime.",
+
+  "jobs": [
+    {
+      "name":        "session-reset",
+      "description": "Daily context reset — keeps token usage lean",
+      "schedule":    "0 5 * * *",
+      "timezone":    "America/Toronto",
+      "session":     "main",
+      "deliver_to":  "discord:{DISCORD_CHANNEL_ID}",
+      "systemEvent": "/new"
+    },
+    {
+      "name":           "daily-heartbeat",
+      "description":    "Daily 9 AM ET — check Notion tasks and nudge the team as needed",
+      "schedule":       "0 9 * * *",
+      "timezone":       "America/Toronto",
+      "session":        "isolated",
+      "deliver_to":     "discord:{DISCORD_CHANNEL_ID}",
+      "timeoutSeconds": 300,
+      "message":        "Read SOUL.md, TEAM.md, MEMORY.md, and HEARTBEAT.md from your workspace. Run your daily heartbeat as defined in HEARTBEAT.md.\n\nIf today is Monday: post a full weekly digest — all pending tasks grouped by team member with <@DISCORD_ID> mentions from TEAM.md.\n\nOtherwise: check Notion for tasks due today, tomorrow, and in 2 days. Only post if someone needs a nudge. If everything is on track, stay silent.\n\nNever ping before 9 AM or after 6 PM ET. Vary your phrasing — never use the same wording twice."
+    }
+  ]
+}
