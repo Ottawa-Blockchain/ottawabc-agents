@@ -1,53 +1,106 @@
-# Archie — Ottawa Blockchain Accountability Bot
+# Ottawa Blockchain Agents
 
-OpenClaw-based Discord accountability bot for the Ottawa Blockchain private team channel. Tracks action items, sends smart reminders based on due dates, learns from conversations, and routes questions to the right team member.
+Discord agent stack for the Ottawa Blockchain community. Two bots, one server:
 
-**Read `PLAN.md` first** — it has the full setup walkthrough for a fresh VPS.
+| Bot | Channel | Role |
+|-----|---------|------|
+| **Archie** | Private team channel | Accountability, task management, Notion |
+| **Pulse** | Public community channel | News, quizzes, community engagement |
 
-## Quick Start (on the dedicated VPS)
+Built on [OpenClaw](https://openclaw.ai), running in Docker.
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Docker + Docker Compose
+- Discord Developer account (one bot per agent)
+- OpenAI API key
+- Anthropic API key (Archie fallback model)
+- Notion integration token (Archie)
+
+### 1. Clone and configure
 
 ```bash
-# 1. Install OpenClaw
-npm install -g openclaw@latest
+git clone https://github.com/Ottawa-Blockchain/ottawabc-agents.git
+cd ottawabc-agents
 
-# 2. Clone this repo
-git clone https://github.com/nolandruid/ottawabc-bot.git
-cd ottawabc-bot
-
-# 3. Run the onboard wizard
-openclaw onboard --install-daemon
-
-# 4. Symlink workspace
-mv ~/.openclaw/workspace ~/.openclaw/workspace.bak
-ln -s ~/ottawabc-bot/workspace ~/.openclaw/workspace
-openclaw gateway restart
-
-# 5. Verify
-openclaw gateway status
+# Fill in credentials for each agent
+cp agents/archie/.env.example agents/archie/.env
+cp agents/pulse/.env.example  agents/pulse/.env
+# Edit both .env files — see comments inside for where to get each value
 ```
 
-## Workspace Files
+### 2. Set up your team roster
 
-| File | Purpose |
-|------|---------|
-| `workspace/SOUL.md` | Archie's identity, tone, routing rules |
-| `workspace/MEMORY.md` | Auto-updated by Archie as he learns |
-| `workspace/HEARTBEAT.md` | Proactive reminder logic |
-| `workspace/TEAM.md` | Team roster + Discord IDs |
+Edit `agents/archie/workspace/TEAM.md` with your team members' real names and Discord user IDs. This file is gitignored and stays local — never commit it.
 
-## Action Items
+### 3. Run
 
-Edit `tasks.json` directly until Notion is connected. See `PLAN.md` for Notion setup steps.
+```bash
+docker compose up --build -d
+docker compose logs -f
+```
 
-## Team Roster
+Both bots should appear online in Discord within ~30 seconds.
 
-Edit `workspace/TEAM.md` with real team member names and Discord user IDs (`<@ID>`).
+---
 
-## Architecture
+## Repository Structure
 
-- **Runtime:** OpenClaw on dedicated DigitalOcean VPS
-- **Channel:** Discord (Ottawa Blockchain private accountability channel)
-- **Model:** claude-sonnet-4-6
-- **Tasks:** tasks.json → Notion (later)
-- **Memory:** workspace/MEMORY.md (auto-updated)
-- **Proactivity:** OpenClaw heartbeat system + HEARTBEAT.md
+```
+ottawabc-agents/
+├── agents/
+│   ├── archie/               ← Archie's build context and workspace
+│   │   ├── Dockerfile
+│   │   ├── entrypoint.sh
+│   │   ├── seed-crons.py
+│   │   ├── config/
+│   │   │   ├── openclaw-docker.json   ← OpenClaw config (secrets as REDACTED_*)
+│   │   │   └── openclaw-crons.json    ← Scheduled heartbeat jobs
+│   │   ├── workspace/                 ← Agent's brain (bind-mounted at runtime)
+│   │   │   ├── SOUL.md                ← Identity, behaviour, rules
+│   │   │   ├── HEARTBEAT.md           ← Proactive check-in logic
+│   │   │   ├── TEAM.md                ← Team roster + Discord IDs (local only)
+│   │   │   ├── MEMORY.md              ← Learned context (auto-updated)
+│   │   │   └── TOOLS.md               ← Environment notes (Notion, commands)
+│   │   ├── persist/                   ← Device pairing tokens (gitignored)
+│   │   └── .env.example
+│   └── pulse/                ← Pulse's build context and workspace
+│       ├── config/
+│       ├── workspace/
+│       └── .env.example
+├── Dockerfile                ← Shared build for Pulse
+├── entrypoint.sh             ← Shared entrypoint for Pulse
+├── docker-compose.yml
+└── LICENSE
+```
+
+---
+
+## How It Works
+
+Both agents run on [OpenClaw](https://openclaw.ai) — an AI agent runtime that handles Discord connections, memory, scheduled jobs (heartbeats), and tool use.
+
+**Config is baked into the image at build time.** Secrets (`REDACTED_*` placeholders) are injected at container startup by `entrypoint.sh` — they never appear in image layers or shell history.
+
+**The workspace is bind-mounted from the host.** Archie reads and writes his workspace files (`SOUL.md`, `MEMORY.md`, etc.) live on disk. Changes you make take effect on the next session without a rebuild.
+
+**Crons are seeded at startup.** `seed-crons.py` registers heartbeat jobs with the OpenClaw gateway every time the container starts. If a job already exists it's skipped.
+
+**Persist volumes survive restarts.** Discord bot pairing and gateway identity are stored in `agents/archie/persist/` on the host, so Archie doesn't need to re-pair after a rebuild.
+
+---
+
+## Agents
+
+- [Archie](agents/archie/README.md) — private accountability bot
+- [Pulse](agents/pulse/README.md) — public community bot
+
+---
+
+## License
+
+[PolyForm Noncommercial License 1.0](LICENSE) — free to use and adapt for personal, educational, and nonprofit purposes. Commercial use is not permitted.
