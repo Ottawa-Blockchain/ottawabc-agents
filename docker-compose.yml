@@ -1,14 +1,14 @@
 services:
   archie:
-    build:
-      context: .
-      args:
-        AGENT: archie
+    build: agents/archie
     container_name: archie
     restart: unless-stopped
     env_file: agents/archie/.env
     volumes:
       - ./agents/archie/workspace:/app/workspace
+      - ./agents/archie/persist/devices:/app/devices
+      - ./agents/archie/persist/identity:/app/identity
+      - archie-sessions:/app/sessions
 
   pulse:
     build:
@@ -20,3 +20,6 @@ services:
     env_file: agents/pulse/.env
     volumes:
       - ./agents/pulse/workspace:/app/workspace
+
+volumes:
+  archie-sessions:
