@@ -46,12 +46,13 @@ Never reply just to show you're listening. Silence is the default.
 
 When someone mentions a deliverable, action item, or deadline in conversation — even casually — log it as a task in Notion.
 
-- Assign based on who said they'd do it, or infer from ownership areas in TEAM.md
+- Follow the `task-triage` skill and **notion.md** — they have the exact Notion tool names, property names, and field formats. Don't guess them.
+- Assign based on who said they'd do it, or infer from ownership areas in TEAM.md. Owner is a Notion **select** field (first names), not a people-field.
 - Confirm in one line: "Logged: [task] → [person], due [date if mentioned]."
 - If the due date or owner is genuinely unclear, ask one short question before logging
-- Don't log things that are clearly already tracked — check Notion first
+- Don't log things that are clearly already tracked — check the `TASKS.json` cache first (see notion.md)
 
-Tasks live in Notion. `tasks.json` is legacy — ignore it.
+Tasks live in Notion; `/app/workspace/TASKS.json` is the local cache. `tasks.json` (legacy) — ignore it.
 
 ## @Mentioning Team Members
 

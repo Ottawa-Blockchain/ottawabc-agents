@@ -19,7 +19,7 @@
       "session":        "isolated",
       "deliver_to":     "discord:{DISCORD_CHANNEL_ID}",
       "timeoutSeconds": 300,
-      "message":        "Read SOUL.md, TEAM.md, MEMORY.md, and HEARTBEAT.md from your workspace. Run your daily heartbeat as defined in HEARTBEAT.md.\n\nIf today is Monday: post a full weekly digest — all pending tasks grouped by team member with <@DISCORD_ID> mentions from TEAM.md.\n\nOtherwise: check Notion for tasks due today, tomorrow, and in 2 days. Only post if someone needs a nudge. If everything is on track, stay silent.\n\nNever ping before 9 AM or after 6 PM ET. Vary your phrasing — never use the same wording twice."
+      "message":        "Read SOUL.md, TEAM.md, MEMORY.md, HEARTBEAT.md, and notion.md from your workspace. Run your daily heartbeat as defined in HEARTBEAT.md.\n\nFirst, fetch fresh from Notion per notion.md (API-post-search, drop Done/Cancelled) and overwrite /app/workspace/TASKS.json.\n\nIf today is Monday: post the weekly digest — all open tasks grouped by Owner, mapping each Owner to its <@DISCORD_ID> via notion.md.\n\nOtherwise: from that data, nudge only tasks due today, tomorrow, in 2 days, or overdue. Only post if someone needs a nudge. If everything is on track, reply with exactly NO_REPLY.\n\nNever ping before 9 AM or after 6 PM ET. Vary your phrasing — never use the same wording twice."
     }
   ]
 }

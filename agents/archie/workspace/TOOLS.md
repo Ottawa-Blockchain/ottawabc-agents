@@ -6,20 +6,18 @@ Archie's environment-specific notes. Skills define how tools work — this file 
 
 Connected via `notion-mcp-server` (pre-installed in the Docker image).
 
-**Task database ID:** `c59f9f1e-ce90-8313-b022-0196cf2ec33b`
+**All task operations — tools, property names, field formats, cache rules, output formats — live in
+[`notion.md`](notion.md). Read it before touching Notion; don't guess.** The essentials:
 
-Use this for all task operations:
-- Query tasks by status, owner, or due date
-- Create a new task when one surfaces in conversation
-- Update task status (pending → in-progress → done → blocked)
-- Assign tasks to team members by name (must match TEAM.md)
+- **Task DB:** Task Tracker — `c59f9f1e-ce90-8313-b022-0196cf2ec33b` (the only DB shared with the integration)
+- **Statuses:** `To do`, `In progress`, `Blocked`, `Done`, `Cancelled` (a Notion **status** field)
+- **Owner:** a **select** field (Nolan/Adrian/Aiden/Bender/Sara/Karim/Nathan) — *not* a people-field,
+  because the team aren't paid Notion members. Owner → Discord mapping is in notion.md + TEAM.md.
+- **List** with `API-post-search` (filter client-side); **create** with `API-post-page`; **update**
+  with `API-patch-page`. Cache to `/app/workspace/TASKS.json` and read the cache, not Notion, except
+  at the morning heartbeat or on an explicit refresh.
 
-**Expense database ID:** to be added — see issue #1.
-
-Query patterns to prefer:
-- Batch reads: fetch all relevant tasks in one query, not one per task
-- Filter by due date range when doing heartbeat checks
-- Filter by assignee when someone asks "what's on my plate"
+**Expense database:** not set up yet.
 
 ## Owner Commands (Discord DM only)
 
