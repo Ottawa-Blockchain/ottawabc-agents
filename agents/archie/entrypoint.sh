@@ -25,6 +25,12 @@ discord_channel_id = require("DISCORD_CHANNEL_ID")
 discord_owner_id   = require("DISCORD_OWNER_ID")
 notion_token       = os.environ.get("NOTION_TOKEN", "")
 
+# DM allowlist: comma-separated Discord IDs in .env (keeps real IDs out of the public repo).
+# Falls back to just the owner if unset. Rendered into the config as a JSON array.
+allowlist = [x.strip() for x in os.environ.get("DISCORD_ALLOWLIST", "").split(",") if x.strip()]
+if not allowlist:
+    allowlist = [discord_owner_id]
+
 with open("/app/openclaw-template.json") as f:
     content = f.read()
 
@@ -33,6 +39,8 @@ content = content.replace("REDACTED_DISCORD_BOT_TOKEN",  discord_bot_token)
 content = content.replace("REDACTED_DISCORD_GUILD_ID",   discord_guild_id)
 content = content.replace("REDACTED_DISCORD_CHANNEL_ID", discord_channel_id)
 content = content.replace("REDACTED_DISCORD_OWNER_ID",   discord_owner_id)
+# Replace the quoted placeholder with a real JSON array (note: quotes included in the match).
+content = content.replace('"REDACTED_DISCORD_ALLOWLIST"', json.dumps(allowlist))
 
 if notion_token:
     content = content.replace("REDACTED_NOTION_TOKEN", notion_token)
@@ -47,16 +55,38 @@ with open("/app/openclaw.json", "w") as f:
 PYEOF
 
 # ---------------------------------------------------------------------------
-# 2. Upgrade CLI device to full operator scope before the gateway reads it.
-#    This ensures the paired device can issue any command (e.g. /new, /model)
-#    without needing a re-pair after each container rebuild.
+# 2. Start the OpenClaw gateway in the background, then wait for it to be ready.
+#    bind lan so other containers on the Docker network can reach it.
+# ---------------------------------------------------------------------------
+openclaw gateway run --port 18789 --bind lan &
+GATEWAY_PID=$!
+
+echo "[entrypoint] waiting for gateway..."
+for i in $(seq 1 90); do
+    if openclaw cron list >/dev/null 2>&1; then
+        echo "[entrypoint] gateway ready after ${i}s"
+        break
+    fi
+    sleep 1
+done
+
+# ---------------------------------------------------------------------------
+# 3. Upgrade the CLI device to full operator scope — but only AFTER the gateway
+#    has auto-paired it and written devices/paired.json. Running this before the
+#    gateway starts (the old order) no-ops on a fresh boot, leaving the device
+#    under-scoped so cron seeding fails. Wait for the file, then upgrade.
 # ---------------------------------------------------------------------------
 python3 - <<'PYEOF'
-import json, os
+import json, os, time
 
 path = "/app/devices/paired.json"
+for _ in range(10):          # wait up to 10s for auto-pairing to write the file
+    if os.path.exists(path):
+        break
+    time.sleep(1)
 if not os.path.exists(path):
-    exit(0)
+    print("[entrypoint] no devices file yet — skipping scope upgrade", flush=True)
+    raise SystemExit(0)
 
 full = ["operator.admin", "operator.pairing", "operator.read", "operator.write"]
 
@@ -77,22 +107,6 @@ if changed:
         json.dump(data, f, indent=2)
     print("[entrypoint] upgraded device scopes to operator.admin", flush=True)
 PYEOF
-
-# ---------------------------------------------------------------------------
-# 3. Start the OpenClaw gateway in the background, then wait for it to be ready.
-#    bind lan so other containers on the Docker network can reach it.
-# ---------------------------------------------------------------------------
-openclaw gateway run --port 18789 --bind lan &
-GATEWAY_PID=$!
-
-echo "[entrypoint] waiting for gateway..."
-for i in $(seq 1 90); do
-    if openclaw cron list >/dev/null 2>&1; then
-        echo "[entrypoint] gateway ready after ${i}s"
-        break
-    fi
-    sleep 1
-done
 
 # ---------------------------------------------------------------------------
 # 4. Seed cron jobs. Retry up to 3 times — the gateway can take a moment to

@@ -4,17 +4,20 @@ On every proactive check-in, work through this list in order. Act only when acti
 
 ## Daily Check (9 AM ET)
 
-1. Query Notion for all tasks that are NOT done
-2. For each task:
-   - **Due today** → @mention the person directly. No ambiguity.
+This is the one moment you fetch **fresh** from Notion. Follow **notion.md**:
+
+1. Fetch all tasks via `API-post-search`, drop `Done`/`Cancelled`, and overwrite `/app/workspace/TASKS.json` with the cache format in notion.md.
+2. Then, working from that data, for each open task:
+   - **Due today** → @mention the owner directly. No ambiguity.
    - **Due tomorrow** → heads-up @mention
-   - **Due in 2 days** → check recent channel messages. If the person already posted an update on this task, skip. If not, send a gentle nudge.
+   - **Due in 2 days** → check recent channel messages. If the owner already posted an update on this task, skip. If not, send a gentle nudge.
+   - **Overdue** → @mention the owner; ask if it's still on.
    - **Blocked** → ask what's blocking before anything else
-3. Never ping before 9 AM or after 6 PM ET
+3. Map each owner to a Discord mention using the table in notion.md. Never ping before 9 AM or after 6 PM ET.
 
 ## Monday (9 AM ET) — Weekly Digest
 
-Post a full overview of all pending and in-progress tasks grouped by team member. Use `<@DISCORD_ID>` from TEAM.md for each mention. One person per block, clear and scannable.
+After the fetch above, post a full overview of all open tasks grouped by owner, using the **Monday weekly digest** format in notion.md. One person per block, clear and scannable.
 
 ## General Rules
 

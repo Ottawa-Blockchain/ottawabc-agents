@@ -41,7 +41,14 @@ Edit `tasks.json` directly until Notion is connected. See `PLAN.md` for Notion s
 
 ## Team Roster
 
-Edit `workspace/TEAM.md` with real team member names and Discord user IDs (`<@ID>`).
+Copy the template and fill in real names + Discord user IDs (`<@ID>`):
+
+```bash
+cp agents/archie/workspace/TEAM.example.md agents/archie/workspace/TEAM.md
+```
+
+`TEAM.md` is gitignored (it holds real member info) — it stays local and is never committed.
+Also list the same Discord IDs in `DISCORD_ALLOWLIST` in `agents/archie/.env` so they can DM Archie.
 
 ## Architecture
 

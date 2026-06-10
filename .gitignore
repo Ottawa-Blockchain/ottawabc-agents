@@ -9,10 +9,15 @@ venv/
 .DS_Store
 
 # Runtime data — contains PII or secrets, never commit
+agents/*/workspace/TEAM.md
 agents/*/persist/*
 !agents/*/persist/.gitkeep
 agents/*/workspace/tasks.json
+agents/*/workspace/TASKS.json
 agents/*/workspace/memory/
 agents/*/workspace/.openclaw/
 agents/*/workspace/.clawhub/
 agents/*/workspace/dynamic-crons.json
+agents/*/workspace/AGENTS.md
+agents/*/workspace/IDENTITY.md
+agents/*/workspace/USER.md
