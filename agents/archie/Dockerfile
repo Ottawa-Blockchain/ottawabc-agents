@@ -2,6 +2,9 @@ FROM node:22-slim
 
 WORKDIR /app
 
+# Set state dir early so plugin installs land in /app, matching the runtime env.
+ENV OPENCLAW_STATE_DIR=/app
+
 # System deps: Python is needed for entrypoint.sh and seed-crons.py
 RUN apt-get update -qq \
     && apt-get install -y --no-install-recommends python3 python3-pip \
@@ -14,6 +17,7 @@ RUN pip3 install mcp-proxy --break-system-packages
 # Pin openclaw to a known-good version; bump deliberately.
 # 2026.5.28 is the version proven against the two gpt-5 patches below (matches Melody).
 # Note: @notionhq/notion-mcp-server registers the `notion-mcp-server` binary.
+# OPENCLAW_STATE_DIR is set above so the Discord plugin installs to /app, not ~/.openclaw.
 RUN npm install -g \
     openclaw@2026.5.28 \
     @notionhq/notion-mcp-server \
@@ -46,6 +50,5 @@ COPY seed-crons.py               ./seed-crons.py
 RUN chmod +x /app/entrypoint.sh
 
 ENV OPENCLAW_CONFIG_PATH=/app/openclaw.json
-ENV OPENCLAW_STATE_DIR=/app
 
 ENTRYPOINT ["/app/entrypoint.sh"]

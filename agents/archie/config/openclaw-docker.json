@@ -1,16 +1,14 @@
 {
-  "_note": "Archie's OpenClaw config. Secrets are injected at container startup by entrypoint.sh — REDACTED_* values are never real credentials.",
-
   "agents": {
     "defaults": {
       "workspace": "/app/workspace",
       "models": {
-        "openai/gpt-5":   { "agentRuntime": { "id": "pi" } },
-        "openai/gpt-5.4": { "agentRuntime": { "id": "pi" } }
+        "openai/gpt-5.5": { "agentRuntime": { "id": "pi" } },
+        "openai/gpt-5.5.4": { "agentRuntime": { "id": "pi" } }
       },
       "model": {
-        "primary":   "openai/gpt-5",
-        "fallbacks": ["openai/gpt-5.4"]
+        "primary":   "openai/gpt-5.5",
+        "fallbacks": ["openai/gpt-5.5.4"]
       },
       "thinkingDefault":       "low",
       "blockStreamingDefault": "off",
@@ -32,7 +30,10 @@
       }
     },
     "port": 18789,
-    "bind": "lan"
+    "bind": "lan",
+    "controlUi": {
+      "allowedOrigins": ["http://localhost:18789", "http://127.0.0.1:18789"]
+    }
   },
 
   "session": {
@@ -59,7 +60,6 @@
     }
   },
 
-  "_allowFromNote": "DM allowlist is injected at startup by entrypoint.sh from the DISCORD_ALLOWLIST env var (comma-separated Discord IDs, kept in .env so real IDs stay out of this public repo). Keep .env in sync with workspace/TEAM.md.",
   "channels": {
     "discord": {
       "enabled":     true,
