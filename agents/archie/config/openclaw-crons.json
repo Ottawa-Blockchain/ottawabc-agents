@@ -21,5 +21,15 @@
       "timeoutSeconds": 300,
       "message":        "Read SOUL.md, TEAM.md, MEMORY.md, HEARTBEAT.md, and notion.md from your workspace. Run your daily heartbeat as defined in HEARTBEAT.md.\n\nFirst, fetch fresh from Notion per notion.md (API-post-search, drop Done/Cancelled) and overwrite /app/workspace/TASKS.json.\n\nIf today is Monday: post the weekly digest — all open tasks grouped by Owner, mapping each Owner to its <@DISCORD_ID> via notion.md.\n\nOtherwise: from that data, nudge only tasks due today, tomorrow, in 2 days, or overdue. Only post if someone needs a nudge. If everything is on track, reply with exactly NO_REPLY.\n\nNever ping before 9 AM or after 6 PM ET. Vary your phrasing — never use the same wording twice."
     }
+    ,{
+      "name":           "x-browse",
+      "description":    "Twice-daily X watchlist browse — check accounts and repost selectively",
+      "schedule":       "0 10,17 * * *",
+      "timezone":       "America/Toronto",
+      "session":        "isolated",
+      "deliver_to":     "discord:{DISCORD_CHANNEL_ID}",
+      "timeoutSeconds": 300,
+      "message":        "Read your x-social skill at /app/workspace/skills/x-social/SKILL.md, then read watchlist.md and last-browse.md from the same folder. Browse each account in the watchlist using the browser plugin and repost anything that meets the criteria. Update last-browse.md and repost-log.md when done. Reply NO_REPLY unless you reposted something — if you did, post a one-line note in the channel: what you reposted and why."
+    }
   ]
 }
