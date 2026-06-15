@@ -14,4 +14,9 @@ else
   envsubst < /app/openclaw.json.template > /app/openclaw.json
 fi
 
+# Install and register Discord before gateway starts (plugin install is interactive, so skip if already installed)
+if [ -n "${DISCORD_BOT_TOKEN:-}" ]; then
+  openclaw channels add --channel discord --token "$DISCORD_BOT_TOKEN" 2>&1 || true
+fi
+
 exec openclaw gateway run

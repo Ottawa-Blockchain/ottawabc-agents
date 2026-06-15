@@ -55,7 +55,7 @@
     "entries": {
       "openai":        { "enabled": true },
       "discord":       { "enabled": true },
-      "browser":       { "enabled": false },
+      "browser":       { "enabled": true },
       "talk-voice":    { "enabled": false },
       "device-pair":   { "enabled": false },
       "phone-control": { "enabled": false }

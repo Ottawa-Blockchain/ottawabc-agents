@@ -17,20 +17,20 @@ names, or field paths — they are exact, and Notion rejects anything else.
 |----------|------|-------|
 | `Task name` | title | the task title |
 | `Status` | **status** | one of: `To do`, `In progress`, `Blocked`, `Done`, `Cancelled` |
-| `Owner` | **select** | one of the seven names below — this is how we track who owns a task |
+| `Assignee` | **select** | one of the seven names below — this is how we track who owns a task |
 | `Due date` | date | `YYYY-MM-DD` or unset |
 | `Description` | rich_text | optional detail |
 | `Tags` | multi_select | `🎨 Design`, `💻 Tech`, `📱 Marketing`, `General` — category, not owner |
 
-> **Do not use** the `Assignee`, `Person`, or `Ass` people-type fields. The team are not paid
-> Notion members, so people-fields can't hold them. **Ownership lives in the `Owner` select.**
+> Do not use any people-type fields (e.g., `Person`, `People`). The team are not paid
+> Notion members, so people-fields can't hold them. Ownership lives in the `Assignee` select.
 > `Files & media` is unused too.
 
-### Owner → Discord mention
+### Assignee → Discord mention
 
-The `Owner` select value maps to a Discord ID (these mirror TEAM.md — keep them in sync):
+The `Assignee` select value maps to a Discord ID (these mirror TEAM.md — keep them in sync):
 
-| `Owner` | Discord mention |
+| `Assignee` | Discord mention |
 |---------|-----------------|
 | Nolan  | `<@712636536755060777>` |
 | Adrian | `<@695714324827734077>` |
@@ -40,7 +40,7 @@ The `Owner` select value maps to a Discord ID (these mirror TEAM.md — keep the
 | Karim  | `<@375703603563986955>` |
 | Nathan | `<@1282820043994038293>` |
 
-An empty `Owner` = unassigned. Infer the owner from TEAM.md ownership areas when logging a task;
+An empty `Assignee` = unassigned. Infer the assignee from TEAM.md ownership areas when logging a task;
 if it's genuinely unclear, ask one short question or tag Nolan.
 
 ---
@@ -54,7 +54,7 @@ an internal data-source ID (not the database UUID) and returns a 400.
 |--------|------|-------|
 | List tasks | `API-post-search` | returns all Task Tracker pages; filter client-side |
 | Create a task | `API-post-page` | parent `{ "database_id": "<id above>" }` |
-| Update a task | `API-patch-page` | by `page_id`; set Status / Owner / Due date |
+| Update a task | `API-patch-page` | by `page_id`; set Status / Assignee / Due date |
 
 ### Listing tasks (`API-post-search`)
 
@@ -72,7 +72,7 @@ Then filter the results client-side:
 |-------|------|
 | Task name | `properties["Task name"].title[0].plain_text` |
 | Status | `properties.Status.status.name` |
-| Owner | `properties.Owner.select.name` (or `null`) |
+| Assignee | `properties.Assignee.select.name` (or `null`) |
 | Due date | `properties["Due date"].date.start` (or `null`) |
 | Page ID | `id` — needed for write-back |
 
@@ -115,13 +115,13 @@ heartbeat or someone explicitly says "refresh"/"sync".
   "properties": {
     "Task name": { "title": [ { "text": { "content": "Confirm venue for June event" } } ] },
     "Status":    { "status": { "name": "To do" } },
-    "Owner":     { "select": { "name": "Nolan" } },
+    "Assignee":  { "select": { "name": "Nolan" } },
     "Due date":  { "date": { "start": "2026-06-12" } }
   }
 }
 ```
 
-- Omit `Owner` if unassigned, `Due date` if none. New tasks start at `Status` = `To do`.
+- Omit `Assignee` if unassigned, `Due date` if none. New tasks start at `Status` = `To do`.
 - Before creating, scan the cache for a near-duplicate by name — update instead of duplicating.
 
 ### Mark complete / update (`API-patch-page`)
@@ -130,24 +130,24 @@ heartbeat or someone explicitly says "refresh"/"sync".
 { "page_id": "<id from cache>", "properties": { "Status": { "status": { "name": "Done" } } } }
 ```
 
-Reassign with `"Owner": { "select": { "name": "Bender" } }`; reschedule with `"Due date"`.
+Reassign with `"Assignee": { "select": { "name": "Bender" } }`; reschedule with `"Due date"`.
 After any write, update `TASKS.json` to match.
 
 ---
 
 ## Output formats (Discord, plain text — see SOUL.md for voice)
 
-Keep it short and vary phrasing. `@mention` owners with the IDs above. Never start a line with "I".
+Keep it short and vary phrasing. `@mention` assignees with the IDs above. Never start a line with "I".
 
 ### Daily nudge (9 AM, Tue–Fri)
-Only ping on tasks **due today, tomorrow, or in 2 days, or overdue**. If a task's owner already
+Only ping on tasks **due today, tomorrow, or in 2 days, or overdue**. If a task's assignee already
 posted an update in-channel, skip it. If nothing needs a nudge, say nothing (`NO_REPLY` in cron).
 ```
 <@695714324827734077> — "Confirm venue" is due tomorrow. Still good?
 ```
 
 ### Monday weekly digest (9 AM Mon)
-Group open tasks by owner. One block per person.
+Group open tasks by assignee. One block per person.
 ```
 Weekly rundown — open tasks:
 

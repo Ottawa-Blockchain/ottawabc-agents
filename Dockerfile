@@ -6,7 +6,7 @@ WORKDIR /app
 
 RUN apt-get update -qq && apt-get install -y -qq python3 gettext-base && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g openclaw@latest
+RUN npm install -g openclaw@latest && echo "" | openclaw plugins install @openclaw/discord || true
 
 COPY agents/${AGENT}/config/openclaw.json.template ./openclaw.json.template
 COPY agents/${AGENT}/workspace/ ./workspace/
