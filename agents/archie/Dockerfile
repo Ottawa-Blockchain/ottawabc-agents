@@ -5,9 +5,14 @@ WORKDIR /app
 # Set state dir early so plugin installs land in /app, matching the runtime env.
 ENV OPENCLAW_STATE_DIR=/app
 
-# System deps: Python is needed for entrypoint.sh and seed-crons.py
+# System deps: Python for entrypoint/seed scripts; Chromium deps for browser plugin
 RUN apt-get update -qq \
-    && apt-get install -y --no-install-recommends python3 python3-pip \
+    && apt-get install -y --no-install-recommends \
+       python3 python3-pip \
+       chromium fonts-liberation libnss3 libatk1.0-0 libatk-bridge2.0-0 \
+       libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 \
+       libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libx11-6 \
+       libxext6 libxss1 libxtst6 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # mcp-proxy bridges the OpenClaw gateway to HTTP-based MCP servers
